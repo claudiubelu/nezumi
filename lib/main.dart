@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nezumi/qrscanner.dart';
 
 void main() {
   runApp(const NezumiApp());
@@ -31,23 +32,49 @@ class NezumiHomePage extends StatefulWidget {
 }
 
 class _NezumiHomePageState extends State<NezumiHomePage> {
+
+  String _gitUrl = "";
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Text(
+              'Nezumi App!',
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _navigateAndGetQRCode(context);
+              },
+              child: const Text("Scan QR Code!"),
+            ),
             Text(
-              'Hello there!',
+              'URL scanned: $_gitUrl',
             ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> _navigateAndGetQRCode(BuildContext context) async {
+    final result = await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const QRViewWidget()),
+    );
+
+    _gitUrl = result;
+    print(_gitUrl);
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$result')));
+    }
 }
