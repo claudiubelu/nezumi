@@ -1,4 +1,6 @@
+import 'events.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nezumi/git_handler.dart';
 import 'package:nezumi/qrscanner.dart';
 
@@ -33,42 +35,57 @@ class NezumiHomePage extends StatefulWidget {
 }
 
 class _NezumiHomePageState extends State<NezumiHomePage> {
-
   String _gitUrl = "";
 
   @override
   Widget build(BuildContext context) {
+    List<Card> Cards = [];
+    for (var i = 0; i < Events.length; i++) {
+      Cards.add(Card(
+          shadowColor: Colors.grey,
+          color: Color(0xe2d5f5).withOpacity(0.9),
+          clipBehavior: Clip.hardEdge,
+          child: InkWell(
+              hoverColor: Colors.purple.withOpacity(1),
+              splashColor: Color(0xc6aaf0).withAlpha(1000).withOpacity(0.8),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SecondRoute()),
+                );
+                debugPrint('Card tapped.');
+              },
+              child: Container(
+                height: 100,
+                padding: EdgeInsets.all(20),
+                child: Text(Events[i].Title +
+                    '\n\n' +
+                    DateFormat.yMMMd().format(Events[i].date)),
+              ))));
+    }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Nezumi App!',
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _navigateAndGetQRCode(context);
-              },
-              child: const Text("Scan QR Code!"),
-            ),
-            Text(
-              'URL scanned: $_gitUrl',
-            ),
-          ],
-        ),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(50),
+        itemCount: Events.length,
+        separatorBuilder: (context, index) {
+          return const SizedBox(height: 15);
+        },
+        itemBuilder: (context, index) {
+          print(index);
+          return Cards[index];
+        },
       ),
     );
   }
 
   Future<void> _navigateAndGetQRCode(BuildContext context) async {
-    final result = await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const QRViewWidget()),
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const QRViewWidget()),
     );
 
     _gitUrl = result;
@@ -87,5 +104,26 @@ class _NezumiHomePageState extends State<NezumiHomePage> {
     ScaffoldMessenger.of(context)
       ..removeCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(snackbarMsg)));
+  }
+}
+
+class SecondRoute extends StatelessWidget {
+  const SecondRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Details'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Go back!'),
+        ),
+      ),
+    );
   }
 }
