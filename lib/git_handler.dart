@@ -19,12 +19,14 @@ class RepoCloneException implements Exception {
   RepoCloneException(this.url, this.exitCode, this.stdout, this.stderr);
 }
 
-void fetchGitRepo(String gitUrl) async {
+Future<String> fetchGitRepo(String gitUrl) async {
   // extract the repo name from the last slash.
-  var repoName = gitUrl.substring(gitUrl.lastIndexOf("/"));
+  var repoName = gitUrl.substring(gitUrl.lastIndexOf("/") + 1);
 
   // trim .git suffix.
-  repoName = repoName.substring(0, repoName.lastIndexOf(".git"));
+  if (repoName.endsWith(".git")) {
+    repoName = repoName.substring(0, repoName.length - 4);
+  }
 
   var reposPath = path.join(await localPath(), "repos");
   var thisRepoPath = path.join(reposPath, repoName);
@@ -37,6 +39,9 @@ void fetchGitRepo(String gitUrl) async {
 
   // if we're here, it means that this is a new repo.
   _cloneGitRepository(gitUrl, reposPath, thisRepoPath);
+
+  // return the repository path.
+  return thisRepoPath;
 }
 
 void _cloneGitRepository(String gitUrl, String cloneDestination, String repoPath) async {

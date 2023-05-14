@@ -1,6 +1,7 @@
 import 'events.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:nezumi/git_handler.dart';
 import 'package:nezumi/qrscanner.dart';
 
@@ -39,6 +40,8 @@ class _NezumiHomePageState extends State<NezumiHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _gitUrl = "https://github.com/claudiubelu/testing";
+    _test(context);
     List<Card> Cards = [];
     for (var i = 0; i < Events.length; i++) {
       Cards.add(Card(
@@ -90,11 +93,14 @@ class _NezumiHomePageState extends State<NezumiHomePage> {
 
     _gitUrl = result;
     print(_gitUrl);
+    await _test(context);
+  }
 
+  Future<void> _test(BuildContext context) async {
     String snackbarMsg = "Schedule registered!";
 
     try {
-      fetchGitRepo(_gitUrl);
+      await fetchGitRepo(_gitUrl);
     } on RepoExistsException catch (e) {
       snackbarMsg = "Schedule ${e.repo} already registered!";
     } on RepoCloneException catch (e) {
