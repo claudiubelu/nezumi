@@ -100,7 +100,7 @@ class _NezumiHomePageState extends State<NezumiHomePage> {
     String snackbarMsg = "Schedule registered!";
 
     try {
-      await fetchGitRepo(_gitUrl);
+      // await fetchGitRepo(_gitUrl);
     } on RepoExistsException catch (e) {
       snackbarMsg = "Schedule ${e.repo} already registered!";
     } on RepoCloneException catch (e) {

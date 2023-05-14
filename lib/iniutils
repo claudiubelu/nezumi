@@ -1,0 +1,22 @@
+import 'dart:io';
+import 'package:ini/ini.dart';
+
+import 'events.dart';
+
+List<Event_card> readEventsFromIni(String filepath) {
+  File file = File(filepath);
+  Config config = Config.fromStrings(file.readAsLinesSync());
+
+  List<Event_card> events = [];
+
+  // The .ini section will actually be the event title.
+  for(var section in config.sections()) {
+    String description = config.get(section, "description") as String;
+    String dateString = config.get(section, "date") as String;
+    DateTime date = DateTime.parse(dateString);
+
+    events.add(Event_card(0, section, description, date));
+  }
+
+  return events;
+}
